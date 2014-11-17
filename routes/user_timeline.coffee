@@ -1,4 +1,3 @@
-request = require 'request'
 Feed = require 'feed'
 twitter = require '../twitter'
 async = require 'async'
