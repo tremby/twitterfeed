@@ -1,26 +1,17 @@
 Feed = require 'feed'
 twitter = require '../twitter'
 async = require 'async'
+qs = require 'qs'
 
 module.exports = (req, res, next) ->
 	user = req.params.user
 	format = req.params.format
 
-	tweets = null
 	async.parallel
-		oembeds: (done) ->
+		tweets: (done) ->
 			twitter.get 'statuses/user_timeline',
 				screen_name: user
-			, (err, timeline_data, response) ->
-				return done err if err?
-
-				tweets = timeline_data
-
-				async.map timeline_data, (tweet, done) ->
-					twitter.get 'statuses/oembed',
-						id: tweet.id_str
-					, done
-				, done
+			, done
 		user: (done) ->
 			twitter.get 'users/show',
 				screen_name: user
@@ -28,6 +19,7 @@ module.exports = (req, res, next) ->
 	, (err, results) ->
 		return next err if err?
 
+		tweets = results.tweets[0]
 		user = results.user[0]
 
 		feed = new Feed
@@ -37,11 +29,17 @@ module.exports = (req, res, next) ->
 			image: user.profile_image_url
 
 		for tweet, i in tweets
-			oembed = results.oembeds[i]
+			url = "http://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id}"
 			feed.addItem
 				title: tweet.text
-				link: oembed.url
-				description: oembed.html
+				link: url
+				description: '<iframe border="0" frameborder="0" height="250" width="550" src="https://twitframe.com/show/?' + (qs.stringify
+					url: url
+					tweet: tweet.text
+					author_name: tweet.user.name
+					author_username: tweet.user.screen_name
+					datetime: new Date(tweet.created_at).toISOString()
+				) + '"></iframe>'
 				date: new Date tweet.created_at
 				author: [
 					name: "#{tweet.user.name} (@#{tweet.user.screen_name})"
