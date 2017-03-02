@@ -17,7 +17,7 @@ Setting up
             access_token: 'my-access-token'
             access_token_secret: 'my-access-token-secret'
 
-4.  Start server with `bin/www` (or use Forever or similar)
+4.  Start server with `npm start` (or use Forever or similar)
 5.  Go to `localhost:3000/user_timeline/<twitter-user-name>/atom`,
     `localhost:3000/user_timeline/<twitter-user-name>/rss`,
     `localhost:3000/home_timeline/<twitter-user-name>/atom` or
