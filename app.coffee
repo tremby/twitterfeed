@@ -14,6 +14,11 @@ app.enable 'trust proxy'
 # Decide on a logger format
 app.use logger if app.get('env') is 'development' then 'dev' else 'combined'
 
+# Set default caching headers in response
+app.use (req, res, next) ->
+	res.set 'Cache-Control': "public, max-age: #{60 * 20}"
+	next()
+
 # Use our routes
 app.use '/', require './routes/index'
 
