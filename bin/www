@@ -1,5 +1,7 @@
 #!/usr/bin/env coffee
 
+require('dotenv').config()
+
 process.chdir __dirname
 
 argv = require('minimist') process.argv.slice(2),
